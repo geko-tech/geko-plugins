@@ -23,6 +23,8 @@ extension TargetDependency: CustomStringConvertible {
             "xctest '\(name)'"
         case .external:
             "external '\(name)'"
+        case .macro:
+            "macro '\(name)'"
         }
     }
 
@@ -48,6 +50,8 @@ extension TargetDependency: CustomStringConvertible {
             return "xctest"
         case .external:
             fatalError("External should be unwrapped during manifest mapping")
+        case let .macro(path, _):
+            return path.basename
         }
     }
 }
