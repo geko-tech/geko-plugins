@@ -46,5 +46,10 @@ jobs:
       - uses: jdx/mise-action@v2
       - name: Run tests for plugin
         run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            swift -print-target-info
+            export LD_LIBRARY_PATH="$(swift -print-target-info | jq -r '.paths.runtimeLibraryPaths[0]'):$LD_LIBRARY_PATH"
+          fi
+
           echo "Testing plugin ${{ matrix.plugin }}"
           geko plugin test --path ${{ matrix.plugin }}

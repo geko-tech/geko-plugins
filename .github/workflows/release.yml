@@ -161,6 +161,11 @@ jobs:
       - name: Archive plugin ${{ matrix.plugin }}
         if: env.PLUGIN_UPLOAD_URL != ''
         run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            swift -print-target-info
+            export LD_LIBRARY_PATH="$(swift -print-target-info | jq -r '.paths.runtimeLibraryPaths[0]'):$LD_LIBRARY_PATH"
+          fi
+
           PLUGIN_NAME=${{ matrix.plugin }}
           geko plugin archive --path $PLUGIN_NAME
           if [[ ${{ matrix.os }} == "ubuntu-24.04" ]]; then
