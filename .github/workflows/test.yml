@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   get-changed-plugins:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       plugins: ${{ steps.set-matrix.outputs.plugins_json }}
     steps:
@@ -35,11 +35,21 @@ jobs:
     strategy:
       matrix:
         plugin: ${{ fromJSON(needs.get-changed-plugins.outputs.plugins) }}
-        os: [macos-26, ubuntu-latest]
+        os: [macos-26, ubuntu-24.04]
     steps:
       - uses: actions/checkout@v6
+      - uses: swift-actions/setup-swift@v3
+        if: runner.os == 'Linux'
+        with:
+          swift-version: "6.3.3"
+          skip-verify-signature: true
       - uses: jdx/mise-action@v2
       - name: Run tests for plugin
         run: |
+          if [ "$RUNNER_OS" == "Linux" ]; then
+            swift -print-target-info
+            export LD_LIBRARY_PATH="$(swift -print-target-info | jq -r '.paths.runtimeLibraryPaths[0]'):$LD_LIBRARY_PATH"
+          fi
+
           echo "Testing plugin ${{ matrix.plugin }}"
           geko plugin test --path ${{ matrix.plugin }}

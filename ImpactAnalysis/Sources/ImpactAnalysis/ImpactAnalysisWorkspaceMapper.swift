@@ -646,7 +646,7 @@ extension ImpactAnalysisWorkspaceMapper {
                     result.insert(.target(name: target, path: path))
                 case let .xcframework(path, _, _):
                     result.insert(.xcframework(path: path))
-                case .local, .sdk, .target, .xctest, .external:
+                case .local, .sdk, .target, .xctest, .external, .macro:
                     break  // not applicable
                 }
             }
@@ -804,7 +804,7 @@ extension ImpactAnalysisWorkspaceMapper {
                     } ?? []
                     result[impactGraphDependency] = Set(nodeDependencies)
 
-                case .target, .local, .sdk, .bundle, .xctest, .external:
+                case .target, .local, .sdk, .bundle, .xctest, .external, .macro:
                     break
                 }
             }
@@ -836,7 +836,7 @@ extension ImpactAnalysisWorkspaceMapper {
             return .xcframework(path: path)
         case let .external(name, _):
             return .external(name: name)
-        case .sdk, .xctest:
+        case .sdk, .xctest, .macro:
             return nil
         }
     }
